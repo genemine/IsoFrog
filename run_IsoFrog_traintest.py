@@ -1,3 +1,4 @@
+# encoding:utf-8
 import pandas as pd
 import os
 from IsoFrog_train_test import IsoFrog_train_test
@@ -7,8 +8,8 @@ from IsoFrog_train_test import IsoFrog_train_test
 A = int(20)
 lmd = float(0.01)
 N = 2000
-Q = 200  # 50
-P = 1735
+Q = 200
+P = 365 # total number of features
 InitialOpt = 0
 order = 1
 K = 2

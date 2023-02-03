@@ -1,11 +1,12 @@
+# encoding:utf-8
 import numpy as np
-from recursive_feature_elmination import RFE
+from sequential_feature_selection import SFS
 from mdipls import mdipls_train,model_eval, mdipls_pred, read_data
 
 def IsoFrog_train_test(inputdir, GOtermname, A, lmd, N, Q, P, InitialOpt, K, order):
 
     #TRAIN
-    feat_select, train_data, g2i = RFE(inputdir, GOtermname, A, lmd, N, Q, P, InitialOpt, K, order)
+    feat_select, train_data, g2i = SFS(inputdir, GOtermname, A, lmd, N, Q, P, InitialOpt, K, order)
 
     Xs = train_data['Xs'][:, feat_select]  # source samples
     Xt = train_data['Xt'][:, feat_select]   # target samples
@@ -33,12 +34,12 @@ def IsoFrog_train_test(inputdir, GOtermname, A, lmd, N, Q, P, InitialOpt, K, ord
     testgenefile = inputdir + '/test_gene.tsv'
     testlabelfile = inputdir + '/test_label.label'
 
-    test_data = read_data(testisofile, testgenefile, testlabelfile)
+    test_data,_ = read_data(testisofile, testgenefile, testlabelfile)
     Xttest = test_data['Xt'][:, feat_select]
     iso2gene = test_data['iso2gene']
     posigene = test_data['posigene']
 
-    Xttest = np.column_stack(Xttest, np.ones((Xttest.shape[0], 1)))
+    Xttest = np.column_stack((Xttest, np.ones((Xttest.shape[0], 1))))
 
     #make prediction
     predscore = mdipls_pred(Xttest, beta)

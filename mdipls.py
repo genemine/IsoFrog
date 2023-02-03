@@ -1,7 +1,7 @@
+# encoding:utf-8
 import pandas  as pd
 import numpy as np
 import random
-from mdiplsldacv import index_arranege, gidx2iidx, readdata
 from collections import Counter
 from sklearn import metrics
 from sklearn.metrics import precision_recall_curve
@@ -10,6 +10,105 @@ from sklearn.metrics import precision_recall_curve
 
 ###############
 # sub-routines
+def gidx2iidx(indexyy, isoidx2geneidx):
+    indexXt = []
+    geneidx2isoidx = {}
+    idx = 0
+    isolen = 0
+    for i in indexyy:
+        indexXt += list(isoidx2geneidx[i])
+        geneidx2isoidx[idx] = np.array(range(len(isoidx2geneidx[i]))) + isolen
+        idx += 1
+        isolen += len(isoidx2geneidx[i])
+    return np.array(indexXt), geneidx2isoidx
+
+
+def readdata(Xcal, ycal, Xtcal, Xtiso2gene, gl):
+    # read source domain data(gene)
+    Xs = Xcal
+    ys = ycal
+    Xt = Xtcal
+
+    # plan2 for Xt(all MIGs)
+    ret, allgenes, sizes = find_sig_mig(Xtiso2gene[:, 1])
+    mig = ret['mig']
+    pos_mig = []
+    neg_mig = []
+    for imig in mig:
+        q = np.where(gl[:, 0] == imig)[0][0]
+        if gl[q, 1] == 0:
+            neg_mig.append(imig)
+        else:
+            pos_mig.append(imig)
+
+    # get sig label: labled target samples
+    sig = ret['sig']
+    sigisoindex = []
+    siglabel = []
+    for isig in sig:
+        sigisoindex.append(np.where(Xtiso2gene[:, 1] == isig)[0][0])
+        siglabel.append(gl[np.where(gl[:, 0] == isig)[0][0], 1])
+    Xtl = Xt[sigisoindex, :]
+    ytl = np.matrix(np.array(siglabel)).T
+
+    # generate labeled target domain data Xtl(isoform of negative MIGs)
+    migisoindex_n = []
+    for imig in neg_mig:
+        migidx = np.where(Xtiso2gene[:, 1] == imig)[0]
+        migisoindex_n += list(migidx)
+    ytl2 = np.matrix(np.zeros((len(migisoindex_n), 1)))
+    Xtl2 = Xt[migisoindex_n, :]
+
+    # generate semi-labeled target domain data Xmiso(isoform of positive MIG)
+    SEED = 1
+    random.seed(SEED)
+    random.shuffle(pos_mig)
+
+    migisoindex_p = []
+    g2i = []
+    for imig in pos_mig:
+        migidx = np.where(Xtiso2gene[:, 1] == imig)[0]
+        migisoindex_p += list(migidx)
+        k = np.where(allgenes == imig)[0][0]
+        g2i.append(sizes[k])
+    yts = np.matrix(np.ones((len(pos_mig), 1)))
+    Xmiso = Xt[migisoindex_p, :]
+
+    ret = {}
+    ret['Xs'] = Xs
+    ret['Xt'] = Xt
+    ret['Xtl'] = Xtl
+    ret['Xtl2'] = Xtl2
+    ret['Xmiso'] = Xmiso
+    ret['ys'] = ys
+    ret['ytl'] = ytl
+    ret['ytl2'] = ytl2
+    ret['yts'] = yts
+
+    return (ret, g2i)
+
+
+def index_arranege(X, y, Xt, iso2gene, isoidx2geneidx, order):
+    # %+++ Order: =1  sorted, default. For CV partition.
+    # %           =0  random.
+    # %           =2  original order
+    if order == 1:
+        indexyy = np.argsort(np.array(y.T))[0]
+        X_arr = X[indexyy, :]
+        y_arr = y[indexyy, :]
+        indexXt_arr, geneidx2isoidx_arr = gidx2iidx(indexyy, isoidx2geneidx)
+        Xt_arr = Xt[indexXt_arr, :]
+        iso2gene_arr = iso2gene[indexXt_arr, :]
+
+    elif order == 0:
+        indexyy = np.array(torch.randperm(len(y)))
+        X_arr = X[indexyy, :]
+        y_arr = y[indexyy, :]
+        indexXt_arr, geneidx2isoidx_arr = gidx2iidx(indexyy, isoidx2geneidx)
+        Xt_arr = Xt[indexXt_arr, :]
+        iso2gene_arr = iso2gene[indexXt_arr, :]
+
+    return (X_arr, y_arr, geneidx2isoidx_arr, Xt_arr, iso2gene_arr)
 
 def mdipls(X, Y, Xs, Xt, Xtl, ytl, Xmiso, Xps, g2i, A, lmd):
 
@@ -256,9 +355,10 @@ def mdipls_train(X, Y, Xs, Xt, Xtl, ytl, Xmiso, Xps, g2i, A, lmd):
 
     for k in range(1, A + 1):
         Wstar = W[:,0:k] * ((P[:,0:k].T * W[:,0:k]).I)
-        bk = Wstar * q[0:k].T
+        bk = Wstar * q[:,0:k].T
         # bk[-1] = bk[-1]+Y_mean- X_mean * bk[0:pvar-1]
         B[:, k - 1] = bk
+
 
     return (B)
 
@@ -329,7 +429,7 @@ def model_eval(scores, iso2gene, posigene):
     ngenes = len(genes)
 
     # AUC for sig
-    tmp = find_sig_mig(list(iso2gene[:, 1]))
+    tmp,_,_ = find_sig_mig(list(iso2gene[:, 1]))
     # sig = tmp['sig']
     mig = tmp['mig']
 
@@ -478,7 +578,7 @@ def mdipls_cv(train, V0, A, lmd, order=1, K = 3):
         ytl2_cal = datacal['ytl2']
 
         X_cal = Xs_cal  # supervised manner
-        y_cal = ys_cal  # supervised manner
+        y_cal = ys_cal  # supervised mannery_cal
         Xts_cal = np.vstack((Xtl_cal, Xtl2_cal))  # supervised manner
         yts_cal = np.vstack((ytl_cal, ytl2_cal))  # supervised manner
 
@@ -518,7 +618,7 @@ def read_data(isofile, genefile, labelfile):
     nsample = Xs.shape[1]
     
     # get source response
-    gl = pd.read_csv(labelfile, header=None, sep='\t').iloc[:,[0,2]].values
+    gl = pd.read_csv(labelfile, header=None, sep='\t').values
     ys = np.matrix(np.zeros((ns, 1)))
     i = 0
     for igene in sgenes:

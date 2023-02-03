@@ -1,10 +1,8 @@
+# encoding:utf-8
 import random
 import numpy as np
 from mdiplslda import mdiplslda
 from mdiplsldacv import mdiplsldacv, index_arranege
-import mdipls
-import os
-import sys
 from warnings import simplefilter
 simplefilter(action='ignore', category=FutureWarning)
 
@@ -157,7 +155,7 @@ def Rand_Frog(inputdir, GOtermname, A, lmd, N, Q, P, InitialOpt, K, order):
         probability[0, V0] = probability[0, V0] + 1
         Q = len(V0)
         if i % 100 == 0:
-            print('The %dth sampling for random frog finished.\n' % (i))
+            print('The %dth sampling is finished.\n' % (i))
 
     probability = probability / N
     Vrank = np.argsort(-probability)[0]

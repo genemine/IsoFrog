@@ -1,8 +1,7 @@
+# encoding:utf-8
 import numpy as np
-import torch
 from mdipls import find_sig_mig,mdipls_tt,ldapinv
 from sklearn import metrics
-#from collections import Counter
 import random
 
 def cal_auc_auprc(label, scores):

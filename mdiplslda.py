@@ -1,3 +1,4 @@
+# encoding:utf-8
 import numpy as np
 from mdipls import ldapinv, read_data, mdipls_tt
 
