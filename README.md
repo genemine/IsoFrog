@@ -26,4 +26,4 @@ If any questions, please do not hesitate to contact me at:
 <br>
 Hongdong Li `hongdong@csu.edu.cn`
 <br>
-Jianxin Wang `jxwang@csu.edu.cn`
+Jianxin Wang `jxwang@mail.csu.edu.cn`
