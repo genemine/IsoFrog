@@ -1,6 +1,6 @@
 # IsoFrog
 ## 1. Description
-IsoFrog is a feature selection-based computational approach for isoform function prediction. It employs a Reversible Jump Monte Carlo Markov Chain (RJMCMC) feature selection framework to assess the feature importance to the function. Then a recursive feature elimination procedure is applied to extract a subset of function-relevant features. The selected features are input into MdiPLS. In such a way, the features of importance to isoform function can be singled out and leveraged for isoform function prediction.
+IsoFrog is a feature selection-based computational approach for isoform function prediction. It employs a Reversible Jump Monte Carlo Markov Chain (RJMCMC) feature selection framework to assess the feature importance to the function. Then a sequential feature selection procedure is applied to extract a subset of function-relevant features. The selected features are input into MdiPLS. In such a way, the features of importance to isoform function can be singled out and leveraged for isoform function prediction.
 
 
 ## 2. Input data
