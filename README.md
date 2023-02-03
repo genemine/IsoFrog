@@ -1,6 +1,6 @@
 # IsoFrog
 ## 1. Description
-IsoFrog is a feature selection-based computational approach for isoform function prediction. It employs a Reversible Jump Monte Carlo Markov Chain (RJMCMC)-like feature selection framework to assess the feature importance to the function. Then a recursive feature elimination procedure is applied to extract a subset of function-relevant features. The selected features are input into MdiPLS, which utilizes gene-domain data and gene-isoform relationships to predict isoform functions. In such a way, the features of importance to the function can be singled out and leveraged for isoform function prediction.
+IsoFrog is a feature selection-based computational approach for isoform function prediction. It employs a Reversible Jump Monte Carlo Markov Chain (RJMCMC) feature selection framework to assess the feature importance to the function. Then a recursive feature elimination procedure is applied to extract a subset of function-relevant features. The selected features are input into MdiPLS. In such a way, the features of importance to isoform function can be singled out and leveraged for isoform function prediction.
 
 
 ## 2. Input data
@@ -12,13 +12,13 @@ IsoFrog is implemented in Python. It is tested on both MacOS and Linux operating
 
 
 ## 4. Usage
-We provide a demo script to show how to run IsoFrog. To test IsoFrog by on an independent test dataset, run the following command from command line:
+We provide a demo script to show how to run IsoFrog. To test IsoFrog on an independent test dataset, run the following command from the command line:
 
 ```bash
 python run_IsoFrog_traintest.py
 ```
 
-This command will first build a model on the training data and then make predictions on the test data.
+With this command, we will first build a model on the training data and then make predictions on the test data.
 
 
 ## 5. Contact
