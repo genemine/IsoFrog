@@ -24,6 +24,6 @@ With this command, we will first build a model on the training data and then mak
 ## 5. Contact
 If any questions, please do not hesitate to contact me at:
 <br>
-Hongdong Li `hongdong@csu.edu.cn`
+Yiwei Liu `204701026@csu.edu.cn`
 <br>
 Jianxin Wang `jxwang@mail.csu.edu.cn`
