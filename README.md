@@ -22,7 +22,7 @@ With this command, we will first build a model on the training data and then mak
 
 
 ## 5. Contact
-If any questions, please do not hesitate to contact me at:
+If any questions, please do not hesitate to contact us at:
 <br>
 Yiwei Liu, `ywlmicky@csu.edu.cn`
 <br>
